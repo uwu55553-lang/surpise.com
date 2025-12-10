@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clique ici !</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            cursor: default;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Styles pour le mode plein écran de la vidéo */
+        .fullscreen-video {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: black;
+        }
+
+        /* La balise video doit prendre toute la place */
+        .fullscreen-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        /* Bouton pour fermer la vidéo */
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <h1>🎁 Clique pour une surprise ! 🎁</h1>
+        <button class="btn" onclick="startLocalVideo()">CLIQUE ICI !</button>
+    </div>
+
+    <div class="fullscreen-video" id="videoContainer">
+        <button class="close-btn" onclick="closeVideo()">✕ Fermer</button>
+        <video id="localVideo" loop playsinline>
+            <source src="rickroll.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la balise vidéo.
+        </video>
+    </div>
+
+    <script>
+        function startLocalVideo() {
+            const mainContainer = document.getElementById('mainContainer');
+            const videoContainer = document.getElementById('videoContainer');
+            const videoElement = document.getElementById('localVideo');
+            
+            // Masquer le contenu principal
+            mainContainer.style.display = 'none';
+            
+            // Afficher le conteneur vidéo
+            videoContainer.style.display = 'block';
+            
+            // Tenter le plein écran sur la page entière
+            const documentElement = document.documentElement;
+            if (documentElement.requestFullscreen) {
+                documentElement.requestFullscreen();
+            } else if (documentElement.webkitRequestFullscreen) {
+                documentElement.webkitRequestFullscreen();
+            } else if (documentElement.msRequestFullscreen) {
+                documentElement.msRequestFullscreen();
+            }
+            
+            // Démarrer la lecture de la vidéo (nécessite une interaction utilisateur)
+            const playPromise = videoElement.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Lecture automatique démarrée
+                }).catch(error => {
+                    // La lecture automatique a été bloquée par le navigateur
+                    console.log("Lecture automatique bloquée : ", error);
+                });
+            }
+        }
+
+        function closeVideo() {
+            const videoContainer = document.getElementById('videoContainer');
+            const videoElement = document.getElementById('localVideo');
+            const mainContainer = document.getElementById('mainContainer');
+            
+            // Masquer la vidéo et réafficher le contenu principal
+            videoContainer.style.display = 'none';
+            mainContainer.style.display = 'flex'; // Rétablir le display:flex pour le centrage
+            
+            // Arrêter la lecture
+            videoElement.pause();
+            videoElement.currentTime = 0; // Remet au début
+
+            // Sortir du plein écran natif du navigateur
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        // Fermer avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            const videoContainer = document.getElementById('videoContainer');
+            if (e.key === 'Escape' && videoContainer.style.display !== 'none') {
+                closeVideo();
+            }
+        });
+    </script>
+</body>
+</html>
